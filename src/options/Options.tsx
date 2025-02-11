@@ -5,7 +5,7 @@ interface ConfigurationBucket {
   apiKeyGemini: string | null;
 }
 
-const bucket = getBucket<ConfigurationBucket>('my_bucket', 'sync');
+const bucket = getBucket<ConfigurationBucket>('configuration', 'sync');
 
 const Options = () => {
   const [apiKeyGemini, setApiKeyGemini] = useState<string | null>(null);

@@ -42,7 +42,7 @@ const callGeminiApi = async (
   prompt: string,
   onData: (data: string) => void
 ) => {
-  const bucket = getBucket<ConfigurationBucket>('my_bucket', 'sync');
+  const bucket = getBucket<ConfigurationBucket>('configuration', 'sync');
   const apiKeyGemini = (await bucket.get()).apiKeyGemini;
 
   if (!apiKeyGemini) {
