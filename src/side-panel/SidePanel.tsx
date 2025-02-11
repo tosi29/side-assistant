@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import rehypeHighlight from 'rehype-highlight';
+import 'highlight.js/styles/github.css';
 import styles from './SidePanel.module.css';
 
 type Request = {
@@ -39,7 +41,7 @@ const SidePanel = () => {
 
   return (
     <div className={`px-4 py-2 ${styles.markdownBody}`}>
-      <ReactMarkdown remarkPlugins={[remarkGfm]}>
+      <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeHighlight]}>
         {responseData ? responseData : 'データなし'}
       </ReactMarkdown>
     </div>
