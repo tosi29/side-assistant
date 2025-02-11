@@ -1,0 +1,61 @@
+/* MarkdownViewer.module.css */
+.markdownBody {
+  font-family: 'Arial', sans-serif;
+  line-height: 1.6;
+  color: #333;
+}
+
+/* 見出しのスタイル */
+.markdownBody h1 {
+  font-size: 2.5em;
+  border-bottom: 2px solid #ccc;
+  padding-bottom: 0.5em;
+  margin-top: 1.5em;
+  margin-bottom: 1em;
+  color: #222;
+}
+
+.markdownBody h2 {
+  font-size: 2em;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 0.3em;
+  margin-top: 1.2em;
+  margin-bottom: 0.8em;
+  color: #333;
+}
+
+.markdownBody h3,
+.markdownBody h4,
+.markdownBody h5,
+.markdownBody h6 {
+  font-size: 1.5em;
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+  color: #444;
+}
+
+/* コードブロックのスタイル (シンタックスハイライトのCSSテーマで基本スタイルは適用済み) */
+.markdownBody pre code {
+  padding: 0.5em;
+  background-color: #f0f0f0; /* 必要に応じて背景色を調整 */
+  border-radius: 5px;
+  overflow-x: auto; /* 水平スクロールバーを表示 */
+}
+
+/* リストのスタイル */
+.markdownBody ul,
+.markdownBody ol {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  padding-left: 1.5em;
+}
+
+/* リンクのスタイル */
+.markdownBody a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.markdownBody a:hover {
+  text-decoration: underline;
+}
