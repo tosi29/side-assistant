@@ -1,26 +1,20 @@
 import { getBucket } from '@extend-chrome/storage';
 import { useEffect, useState } from 'react';
-
-interface ConfigurationBucket {
-  apiKeyGemini: string | null;
-}
-
-const bucket = getBucket<ConfigurationBucket>('configuration', 'sync');
+import { getApiKeyGemini, setApiKeyGemini } from '../app/configurations';
 
 const Options = () => {
   const [apiKeyGemini, setApiKeyGemini] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
-      const value = await bucket.get();
-      if (value.apiKeyGemini) {
-        setApiKeyGemini(value.apiKeyGemini);
+      const value = await getApiKeyGemini();
+      if (value) {
+        setApiKeyGemini(value);
       }
     })();
   }, []);
 
   const saveApiKeyGemini = (apiKeyGemini: string | null) => {
-    bucket.set({ apiKeyGemini: apiKeyGemini });
     setApiKeyGemini(apiKeyGemini);
   };
 

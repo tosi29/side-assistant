@@ -1,26 +1,19 @@
-import { getBucket } from '@extend-chrome/storage';
 import { useEffect, useState } from 'react';
-
-interface ConfigurationBucket {
-  selectedModel: string | null;
-}
-
-const bucket = getBucket<ConfigurationBucket>('configuration', 'sync');
+import { getSelectedModel, setSelectedModel } from '../app/configurations';
 
 const Popup = () => {
   const [selectedModel, setSelectedModel] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
-      const value = await bucket.get();
-      if (value.selectedModel) {
-        setSelectedModel(value.selectedModel);
+      const value = await getSelectedModel();
+      if (value) {
+        setSelectedModel(value);
       }
     })();
   }, []);
 
   const saveSelectedModel = (model: string | null) => {
-    bucket.set({ selectedModel: model });
     setSelectedModel(model);
   };
 
@@ -41,6 +34,7 @@ const Popup = () => {
           <option value="gemini-2.0-pro-exp-02-05">Gemini 2.0 Pro Experimental 02-05</option>
         </select>
       </span>
+      <textarea placeholder="Custom Instruction"></textarea>
     </div>
   );
 };

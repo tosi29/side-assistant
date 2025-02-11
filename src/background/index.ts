@@ -1,11 +1,5 @@
 import store, { initializeWrappedStore } from '../app/store';
-import { getBucket } from '@extend-chrome/storage';
-import { GoogleGenerativeAI } from '@google/generative-ai';
-
-interface ConfigurationBucket {
-  apiKeyGemini: string | null;
-  selectedModel: string | null;
-}
+import { callGeminiApi } from '../app/generativeAi';
 
 initializeWrappedStore();
 
@@ -37,35 +31,6 @@ chrome.runtime.onInstalled.addListener(() => {
     contexts: ['selection'],
   });
 });
-
-const callGeminiApi = async (
-  instruction: string,
-  prompt: string,
-  onData: (data: string) => void
-) => {
-  const bucket = getBucket<ConfigurationBucket>('configuration', 'sync');
-  const configuration = await bucket.get();
-  const apiKeyGemini = configuration.apiKeyGemini;
-  const selectedModel = configuration.selectedModel ?? 'gemini-2.0-flash-thinking-exp-01-21';
-
-  if (!apiKeyGemini) {
-    return 'API KEYがセットされていません。';
-  }
-  const genai = new GoogleGenerativeAI(apiKeyGemini);
-  const model = genai.getGenerativeModel({
-    model: selectedModel,
-    systemInstruction:
-      instruction +
-      '回答は日本語で、Markdown形式で出力してください。「はい、わかりました」などの相槌は回答に含めないでください。',
-  });
-  const result = await model.generateContentStream([prompt]);
-
-  let response = '';
-  for await (const chunk of result.stream) {
-    response += chunk.text();
-    onData(response);
-  }
-};
 
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   if (tab !== undefined && info.selectionText !== undefined) {
