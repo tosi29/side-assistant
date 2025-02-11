@@ -30,6 +30,11 @@ chrome.runtime.onInstalled.addListener(() => {
     title: 'Rephrase',
     contexts: ['selection'],
   });
+  chrome.contextMenus.create({
+    id: 'explain',
+    title: 'Explain',
+    contexts: ['selection'],
+  });
 });
 
 const callGeminiApi = async (prompt: string) => {
@@ -51,17 +56,31 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
       case 'summarize': {
         chrome.sidePanel.open({ windowId: tab.windowId });
         const result = await callGeminiApi('次のテキストを要約してください。' + info.selectionText);
-        chrome.runtime.sendMessage({ type: 'summarize', text: result });
+        chrome.runtime.sendMessage({ type: 'response', text: result });
         break;
       }
-      case 'polish':
-        console.log(info.selectionText);
+      case 'polish': {
         chrome.sidePanel.open({ windowId: tab.windowId });
+        const result = await callGeminiApi('次のテキストを推敲してください。' + info.selectionText);
+        chrome.runtime.sendMessage({ type: 'response', text: result });
         break;
-      case 'rephrase':
-        console.log(info.selectionText);
+      }
+      case 'rephrase': {
         chrome.sidePanel.open({ windowId: tab.windowId });
+        const result = await callGeminiApi(
+          '次のテキストを言い換える表現を、5つ挙げてください。' + info.selectionText
+        );
+        chrome.runtime.sendMessage({ type: 'response', text: result });
         break;
+      }
+      case 'explain': {
+        chrome.sidePanel.open({ windowId: tab.windowId });
+        const result = await callGeminiApi(
+          '以下のテキストを、分かりやすく解説してください。' + info.selectionText
+        );
+        chrome.runtime.sendMessage({ type: 'response', text: result });
+        break;
+      }
     }
   }
 });

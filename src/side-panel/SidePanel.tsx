@@ -11,7 +11,7 @@ const SidePanel = () => {
       sendResponse: (response?: any) => void
     ) => {
       console.log(request);
-      if (request.type === 'summarize') {
+      if (request.type === 'response') {
         const data = request.text;
         console.log('Side panel: background script からメッセージを受信しました:', data);
         setResponseData(data); // State を更新
