@@ -39,6 +39,7 @@
     "redux-persist-webextension-storage": "^1.0.2",
     "reduxjs-toolkit-persist": "^7.2.1",
     "rehype-highlight": "^7.0.2",
+    "remark-gfm": "^4.0.1",
     "webextension-polyfill": "^0.10.0"
   },
   "devDependencies": {

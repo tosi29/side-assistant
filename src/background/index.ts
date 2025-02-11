@@ -86,7 +86,7 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
       case 'polish': {
         chrome.sidePanel.open({ windowId: tab.windowId });
         await callGeminiApi(
-          '与えられたテキストを推敲してください。',
+          '与えられたテキストを推敲してください。また変更箇所は、別途表形式で変更前と変更後をまとめて出力してください。',
           info.selectionText,
           handleData
         );
