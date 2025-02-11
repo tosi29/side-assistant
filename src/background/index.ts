@@ -37,7 +37,11 @@ chrome.runtime.onInstalled.addListener(() => {
   });
 });
 
-const callGeminiApi = async (prompt: string, onData: (data: string) => void) => {
+const callGeminiApi = async (
+  instruction: string,
+  prompt: string,
+  onData: (data: string) => void
+) => {
   const bucket = getBucket<ConfigurationBucket>('my_bucket', 'sync');
   const apiKeyGemini = (await bucket.get()).apiKeyGemini;
 
@@ -45,7 +49,10 @@ const callGeminiApi = async (prompt: string, onData: (data: string) => void) => 
     return 'API KEYがセットされていません。';
   }
   const genai = new GoogleGenerativeAI(apiKeyGemini);
-  const model = genai.getGenerativeModel({ model: 'gemini-2.0-flash' });
+  const model = genai.getGenerativeModel({
+    model: 'gemini-2.0-flash-thinking-exp-01-21',
+    systemInstruction: instruction + '回答は日本語で、Markdown形式で出力してください。',
+  });
   const result = await model.generateContentStream([prompt]);
 
   let response = '';
@@ -56,7 +63,7 @@ const callGeminiApi = async (prompt: string, onData: (data: string) => void) => 
 };
 
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
-  if (tab !== undefined) {
+  if (tab !== undefined && info.selectionText !== undefined) {
     const handleData = (data: string) => {
       chrome.runtime.sendMessage({ type: 'response', text: data });
     };
@@ -64,18 +71,27 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     switch (info.menuItemId) {
       case 'summarize': {
         chrome.sidePanel.open({ windowId: tab.windowId });
-        await callGeminiApi('次のテキストを要約してください。' + info.selectionText, handleData);
+        await callGeminiApi(
+          '与えられたテキストを要約してください。',
+          info.selectionText,
+          handleData
+        );
         break;
       }
       case 'polish': {
         chrome.sidePanel.open({ windowId: tab.windowId });
-        await callGeminiApi('次のテキストを推敲してください。' + info.selectionText, handleData);
+        await callGeminiApi(
+          '与えられたテキストを推敲してください。',
+          info.selectionText,
+          handleData
+        );
         break;
       }
       case 'rephrase': {
         chrome.sidePanel.open({ windowId: tab.windowId });
         await callGeminiApi(
-          '次のテキストを言い換える表現を、5つ挙げてください。' + info.selectionText,
+          '与えられたテキストを言い換える表現を、5つ挙げてください。',
+          info.selectionText,
           handleData
         );
         break;
@@ -83,7 +99,8 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
       case 'explain': {
         chrome.sidePanel.open({ windowId: tab.windowId });
         await callGeminiApi(
-          '以下のテキストを、分かりやすく解説してください。' + info.selectionText,
+          '与えられたテキストを、分かりやすく解説してください。',
+          info.selectionText,
           handleData
         );
         break;
