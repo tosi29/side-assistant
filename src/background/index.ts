@@ -49,10 +49,9 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   if (tab !== undefined) {
     switch (info.menuItemId) {
       case 'summarize': {
-        console.log(info.selectionText);
+        chrome.sidePanel.open({ windowId: tab.windowId });
         const result = await callGeminiApi('次のテキストを要約してください。' + info.selectionText);
-        // chrome.sidePanel.open({ windowId: tab.windowId });
-        console.log(result);
+        chrome.runtime.sendMessage({ type: 'summarize', text: result });
         break;
       }
       case 'polish':
