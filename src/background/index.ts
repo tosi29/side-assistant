@@ -27,4 +27,20 @@ chrome.runtime.onInstalled.addListener(() => {
   });
 });
 
+chrome.contextMenus.onClicked.addListener(async (info, tab) => {
+  if (tab !== undefined) {
+    switch (info.menuItemId) {
+      case 'summarize':
+        console.log(info.selectionText);
+        break;
+      case 'polish':
+        console.log(info.selectionText);
+        break;
+      case 'rephrase':
+        console.log(info.selectionText);
+        break;
+    }
+  }
+});
+
 export {};
