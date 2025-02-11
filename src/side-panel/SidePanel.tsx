@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
 
 const SidePanel = () => {
   const [responseData, setResponseData] = useState<string | null>(null); // State を追加
@@ -30,8 +31,8 @@ const SidePanel = () => {
   }, []); // 空の依存配列で、初回マウント時のみ実行
 
   return (
-    <div className="flex h-screen items-center justify-center">
-      <div>{responseData ? responseData : 'データなし'}</div> {/* State を表示 */}
+    <div className="px-4 py-2">
+      <ReactMarkdown>{responseData ? responseData : 'データなし'}</ReactMarkdown>
     </div>
   );
 };
