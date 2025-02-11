@@ -1,5 +1,10 @@
-import browser from 'webextension-polyfill';
 import store, { initializeWrappedStore } from '../app/store';
+import { getBucket } from '@extend-chrome/storage';
+import { GoogleGenerativeAI } from '@google/generative-ai';
+
+interface ConfigurationBucket {
+  apiKeyGemini: string | null;
+}
 
 initializeWrappedStore();
 
@@ -27,13 +32,29 @@ chrome.runtime.onInstalled.addListener(() => {
   });
 });
 
+const callGeminiApi = async (prompt: string) => {
+  const bucket = getBucket<ConfigurationBucket>('my_bucket', 'sync');
+  const apiKeyGemini = (await bucket.get()).apiKeyGemini;
+
+  if (!apiKeyGemini) {
+    return 'API KEYがセットされていません。';
+  }
+  const genai = new GoogleGenerativeAI(apiKeyGemini);
+  const model = genai.getGenerativeModel({ model: 'gemini-2.0-flash' });
+  const result = await model.generateContent([prompt]);
+  return result.response.text();
+};
+
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   if (tab !== undefined) {
     switch (info.menuItemId) {
-      case 'summarize':
+      case 'summarize': {
         console.log(info.selectionText);
-        chrome.sidePanel.open({ windowId: tab.windowId });
+        const result = await callGeminiApi('次のテキストを要約してください。' + info.selectionText);
+        // chrome.sidePanel.open({ windowId: tab.windowId });
+        console.log(result);
         break;
+      }
       case 'polish':
         console.log(info.selectionText);
         chrome.sidePanel.open({ windowId: tab.windowId });
