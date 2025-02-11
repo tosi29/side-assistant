@@ -51,7 +51,9 @@ const callGeminiApi = async (
   const genai = new GoogleGenerativeAI(apiKeyGemini);
   const model = genai.getGenerativeModel({
     model: 'gemini-2.0-flash-thinking-exp-01-21',
-    systemInstruction: instruction + '回答は日本語で、Markdown形式で出力してください。',
+    systemInstruction:
+      instruction +
+      '回答は日本語で、Markdown形式で出力してください。「はい、わかりました」などの相槌は回答に含めないでください。',
   });
   const result = await model.generateContentStream([prompt]);
 
