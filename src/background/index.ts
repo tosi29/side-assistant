@@ -37,7 +37,7 @@ chrome.runtime.onInstalled.addListener(() => {
   });
 });
 
-const callGeminiApi = async (prompt: string) => {
+const callGeminiApi = async (prompt: string, onData: (data: string) => void) => {
   const bucket = getBucket<ConfigurationBucket>('my_bucket', 'sync');
   const apiKeyGemini = (await bucket.get()).apiKeyGemini;
 
@@ -46,39 +46,52 @@ const callGeminiApi = async (prompt: string) => {
   }
   const genai = new GoogleGenerativeAI(apiKeyGemini);
   const model = genai.getGenerativeModel({ model: 'gemini-2.0-flash' });
-  const result = await model.generateContent([prompt]);
-  return result.response.text();
+  const result = await model.generateContentStream([prompt]);
+
+  let response = '';
+  for await (const chunk of result.stream) {
+    response += chunk.text();
+    onData(response);
+  }
 };
 
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   if (tab !== undefined) {
+    const handleData = (data: string) => {
+      chrome.runtime.sendMessage({ type: 'response', text: data });
+    };
+
     switch (info.menuItemId) {
       case 'summarize': {
         chrome.sidePanel.open({ windowId: tab.windowId });
-        const result = await callGeminiApi('次のテキストを要約してください。' + info.selectionText);
-        chrome.runtime.sendMessage({ type: 'response', text: result });
+        const result = await callGeminiApi(
+          '次のテキストを要約してください。' + info.selectionText,
+          handleData
+        );
         break;
       }
       case 'polish': {
         chrome.sidePanel.open({ windowId: tab.windowId });
-        const result = await callGeminiApi('次のテキストを推敲してください。' + info.selectionText);
-        chrome.runtime.sendMessage({ type: 'response', text: result });
+        const result = await callGeminiApi(
+          '次のテキストを推敲してください。' + info.selectionText,
+          handleData
+        );
         break;
       }
       case 'rephrase': {
         chrome.sidePanel.open({ windowId: tab.windowId });
         const result = await callGeminiApi(
-          '次のテキストを言い換える表現を、5つ挙げてください。' + info.selectionText
+          '次のテキストを言い換える表現を、5つ挙げてください。' + info.selectionText,
+          handleData
         );
-        chrome.runtime.sendMessage({ type: 'response', text: result });
         break;
       }
       case 'explain': {
         chrome.sidePanel.open({ windowId: tab.windowId });
         const result = await callGeminiApi(
-          '以下のテキストを、分かりやすく解説してください。' + info.selectionText
+          '以下のテキストを、分かりやすく解説してください。' + info.selectionText,
+          handleData
         );
-        chrome.runtime.sendMessage({ type: 'response', text: result });
         break;
       }
     }
