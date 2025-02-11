@@ -13,10 +13,6 @@ const Popup = () => {
     })();
   }, []);
 
-  const saveSelectedModel = (model: string | null) => {
-    setSelectedModel(model);
-  };
-
   return (
     <div className="flex flex-col items-center justify-center w-[30rem] h-[15rem]">
       <h1 className="text-base mt-2">Popup</h1>
@@ -25,7 +21,7 @@ const Popup = () => {
         Select Model:
         <select
           value={selectedModel ?? 'gemini-2.0-flash-thinking-exp-01-21'}
-          onChange={(e) => saveSelectedModel(e.target.value)}
+          onChange={(e) => setSelectedModel(e.target.value)}
         >
           <option value="gemini-2.0-flash-thinking-exp-01-21">
             Gemini 2.0 Flash Thinking Experimental 01-21
