@@ -64,23 +64,17 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     switch (info.menuItemId) {
       case 'summarize': {
         chrome.sidePanel.open({ windowId: tab.windowId });
-        const result = await callGeminiApi(
-          '次のテキストを要約してください。' + info.selectionText,
-          handleData
-        );
+        await callGeminiApi('次のテキストを要約してください。' + info.selectionText, handleData);
         break;
       }
       case 'polish': {
         chrome.sidePanel.open({ windowId: tab.windowId });
-        const result = await callGeminiApi(
-          '次のテキストを推敲してください。' + info.selectionText,
-          handleData
-        );
+        await callGeminiApi('次のテキストを推敲してください。' + info.selectionText, handleData);
         break;
       }
       case 'rephrase': {
         chrome.sidePanel.open({ windowId: tab.windowId });
-        const result = await callGeminiApi(
+        await callGeminiApi(
           '次のテキストを言い換える表現を、5つ挙げてください。' + info.selectionText,
           handleData
         );
@@ -88,7 +82,7 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
       }
       case 'explain': {
         chrome.sidePanel.open({ windowId: tab.windowId });
-        const result = await callGeminiApi(
+        await callGeminiApi(
           '以下のテキストを、分かりやすく解説してください。' + info.selectionText,
           handleData
         );
