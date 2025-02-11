@@ -3,6 +3,7 @@ import { getBucket } from '@extend-chrome/storage';
 type ConfigurationBucket = {
   apiKeyGemini: string | null;
   selectedModel: string | null;
+  customInstruction: string | null;
 };
 
 const bucket = getBucket<ConfigurationBucket>('configuration', 'sync');
@@ -23,4 +24,13 @@ export const setSelectedModelConfiguration = async (selectedModel: string) => {
 
 export const setApiKeyGeminiConfiguration = async (apiKeyGemini: string) => {
   bucket.set({ apiKeyGemini: apiKeyGemini });
+};
+
+export const getCustomInstructionConfiguration = async (): Promise<string | null> => {
+  const value = await bucket.get();
+  return value.customInstruction;
+};
+
+export const setCustomInstructionConfiguration = async (customInstruction: string) => {
+  bucket.set({ customInstruction: customInstruction });
 };

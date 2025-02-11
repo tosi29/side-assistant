@@ -1,5 +1,6 @@
 import store, { initializeWrappedStore } from '../app/store';
 import { callGeminiApi } from '../app/generativeAi';
+import { getCustomInstructionConfiguration } from '../app/configurations';
 
 initializeWrappedStore();
 
@@ -28,6 +29,11 @@ chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({
     id: 'explain',
     title: 'Explain',
+    contexts: ['selection'],
+  });
+  chrome.contextMenus.create({
+    id: 'custom',
+    title: 'Custom Instruction',
     contexts: ['selection'],
   });
 });
@@ -70,6 +76,15 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
         chrome.sidePanel.open({ windowId: tab.windowId });
         await callGeminiApi(
           '与えられたテキストを、分かりやすく解説してください。',
+          info.selectionText,
+          handleData
+        );
+        break;
+      }
+      case 'custom': {
+        chrome.sidePanel.open({ windowId: tab.windowId });
+        await callGeminiApi(
+          (await getCustomInstructionConfiguration()) ?? '', // TODO: 指示がないときの対策
           info.selectionText,
           handleData
         );

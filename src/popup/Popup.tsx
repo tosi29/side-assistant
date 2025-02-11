@@ -2,10 +2,13 @@ import { useEffect, useState } from 'react';
 import {
   getSelectedModelConfiguration,
   setSelectedModelConfiguration,
+  getCustomInstructionConfiguration,
+  setCustomInstructionConfiguration,
 } from '../app/configurations';
 
 const Popup = () => {
   const [selectedModel, setSelectedModel] = useState<string>('gemini-2.0-flash-thinking-exp-01-21');
+  const [customInstruction, setCustomInstruction] = useState<string>('');
 
   useEffect(() => {
     (async () => {
@@ -13,13 +16,24 @@ const Popup = () => {
       if (value) {
         setSelectedModel(value);
       }
+
+      const customInstructionValue = await getCustomInstructionConfiguration();
+      if (customInstructionValue) {
+        setCustomInstruction(customInstructionValue);
+      }
     })();
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newValue = e.target.value;
-    setSelectedModel(newValue);
     setSelectedModelConfiguration(newValue);
+    setSelectedModel(newValue);
+  };
+
+  const handleChangeCustomInstruction = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newValue = e.target.value;
+    setCustomInstructionConfiguration(newValue);
+    setCustomInstruction(newValue);
   };
 
   return (
@@ -36,7 +50,11 @@ const Popup = () => {
           <option value="gemini-2.0-pro-exp-02-05">Gemini 2.0 Pro Experimental 02-05</option>
         </select>
       </span>
-      <textarea placeholder="Custom Instruction"></textarea>
+      <textarea
+        placeholder="Custom Instruction"
+        value={customInstruction}
+        onChange={handleChangeCustomInstruction}
+      ></textarea>
     </div>
   );
 };
