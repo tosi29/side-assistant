@@ -4,15 +4,20 @@ import rehypeHighlight from 'rehype-highlight';
 import 'highlight.js/styles/github-dark.css';
 import styles from './SidePanel.module.css';
 
+type Request = {
+  type: string;
+  text: string;
+};
+
 const SidePanel = () => {
   const [responseData, setResponseData] = useState<string | null>(null); // State を追加
 
   useEffect(() => {
     // メッセージリスナー関数
     const messageListener = (
-      request: any,
-      sender: chrome.runtime.MessageSender,
-      sendResponse: (response?: any) => void
+      request: Request
+      // sender: chrome.runtime.MessageSender,
+      // sendResponse: (response?: any) => void
     ) => {
       console.log(request);
       if (request.type === 'response') {
