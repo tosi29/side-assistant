@@ -32,12 +32,15 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     switch (info.menuItemId) {
       case 'summarize':
         console.log(info.selectionText);
+        chrome.sidePanel.open({ windowId: tab.windowId });
         break;
       case 'polish':
         console.log(info.selectionText);
+        chrome.sidePanel.open({ windowId: tab.windowId });
         break;
       case 'rephrase':
         console.log(info.selectionText);
+        chrome.sidePanel.open({ windowId: tab.windowId });
         break;
     }
   }
