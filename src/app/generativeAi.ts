@@ -1,13 +1,13 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { getApiKeyGemini, getSelectedModel } from './configurations';
+import { getApiKeyGeminiConfiguration, getSelectedModelConfiguration } from './configurations';
 
 export const callGeminiApi = async (
   instruction: string,
   prompt: string,
   onData: (data: string) => void
 ) => {
-  const apiKeyGemini = await getApiKeyGemini();
-  const selectedModel = await getSelectedModel();
+  const apiKeyGemini = await getApiKeyGeminiConfiguration();
+  const selectedModel = await getSelectedModelConfiguration();
 
   if (!apiKeyGemini) {
     return 'API KEYがセットされていません。';

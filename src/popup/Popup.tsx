@@ -1,17 +1,26 @@
 import { useEffect, useState } from 'react';
-import { getSelectedModel, setSelectedModel } from '../app/configurations';
+import {
+  getSelectedModelConfiguration,
+  setSelectedModelConfiguration,
+} from '../app/configurations';
 
 const Popup = () => {
-  const [selectedModel, setSelectedModel] = useState<string | null>(null);
+  const [selectedModel, setSelectedModel] = useState<string>('gemini-2.0-flash-thinking-exp-01-21');
 
   useEffect(() => {
     (async () => {
-      const value = await getSelectedModel();
+      const value = await getSelectedModelConfiguration();
       if (value) {
         setSelectedModel(value);
       }
     })();
   }, []);
+
+  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newValue = e.target.value;
+    setSelectedModel(newValue);
+    setSelectedModelConfiguration(newValue);
+  };
 
   return (
     <div className="flex flex-col items-center justify-center w-[30rem] h-[15rem]">
@@ -19,10 +28,7 @@ const Popup = () => {
       <br />
       <span>
         Select Model:
-        <select
-          value={selectedModel ?? 'gemini-2.0-flash-thinking-exp-01-21'}
-          onChange={(e) => setSelectedModel(e.target.value)}
-        >
+        <select value={selectedModel} onChange={handleChange}>
           <option value="gemini-2.0-flash-thinking-exp-01-21">
             Gemini 2.0 Flash Thinking Experimental 01-21
           </option>

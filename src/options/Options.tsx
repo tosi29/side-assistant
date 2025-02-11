@@ -1,21 +1,22 @@
-import { getBucket } from '@extend-chrome/storage';
 import { useEffect, useState } from 'react';
-import { getApiKeyGemini, setApiKeyGemini } from '../app/configurations';
+import { getApiKeyGeminiConfiguration, setApiKeyGeminiConfiguration } from '../app/configurations';
 
 const Options = () => {
   const [apiKeyGemini, setApiKeyGemini] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
-      const value = await getApiKeyGemini();
+      const value = await getApiKeyGeminiConfiguration();
       if (value) {
         setApiKeyGemini(value);
       }
     })();
   }, []);
 
-  const saveApiKeyGemini = (apiKeyGemini: string | null) => {
-    setApiKeyGemini(apiKeyGemini);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    setApiKeyGeminiConfiguration(newValue);
+    setApiKeyGemini(newValue);
   };
 
   return (
@@ -28,7 +29,7 @@ const Options = () => {
         <input
           type="password"
           value={apiKeyGemini ?? ''}
-          onChange={(e) => saveApiKeyGemini(e.target.value)}
+          onChange={handleChange}
           placeholder="Input Gemini API Key"
         />
       </span>
