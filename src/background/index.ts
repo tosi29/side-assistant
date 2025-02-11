@@ -9,11 +9,22 @@ store.subscribe(() => {
   // console.log('state', state);
 });
 
-// show welcome page on new install
-browser.runtime.onInstalled.addListener(async (details) => {
-  if (details.reason === 'install') {
-    //show the welcome page
-    const url = browser.runtime.getURL('welcome/welcome.html');
-    await browser.tabs.create({ url });
-  }
+chrome.runtime.onInstalled.addListener(() => {
+  chrome.contextMenus.create({
+    id: 'summarize',
+    title: 'Summarize',
+    contexts: ['selection'],
+  });
+  chrome.contextMenus.create({
+    id: 'polish',
+    title: 'Polish',
+    contexts: ['selection'],
+  });
+  chrome.contextMenus.create({
+    id: 'rephrase',
+    title: 'Rephrase',
+    contexts: ['selection'],
+  });
 });
+
+export {};
