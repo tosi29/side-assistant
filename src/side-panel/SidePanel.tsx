@@ -4,6 +4,7 @@ import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
 import 'highlight.js/styles/github.css';
 import styles from './SidePanel.module.css';
+import Response from '../app/features/response/Response';
 
 type Request = {
   type: string;
@@ -39,11 +40,9 @@ const SidePanel = () => {
   }, []); // 空の依存配列で、初回マウント時のみ実行
 
   return (
-    <div className={`px-4 py-2 ${styles.markdownBody}`}>
-      <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeHighlight]}>
-        {responseData ? responseData : 'データなし'}
-      </ReactMarkdown>
-    </div>
+    <>
+      <Response markdownText={responseData ?? 'No Text'} />
+    </>
   );
 };
 
