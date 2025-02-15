@@ -11,10 +11,9 @@ type Request = {
 };
 
 const SidePanel = () => {
-  const [responseData, setResponseData] = useState<string | null>(null); // State を追加
+  const [responseData, setResponseData] = useState<string | null>(null);
 
   useEffect(() => {
-    // メッセージリスナー関数
     const messageListener = (
       request: Request
       // sender: chrome.runtime.MessageSender,
@@ -28,11 +27,11 @@ const SidePanel = () => {
       }
     };
 
-    // Listener を登録 (コンポーネントがマウントされた時)
+    // コンポーネントがマウントされた時にListener を登録
     chrome.runtime.onMessage.addListener(messageListener);
     console.log('Side panel: Message listener added.');
 
-    // Listener を解除 (コンポーネントがアンマウントされる時)
+    // コンポーネントがアンマウントされる時にListener を解除
     return () => {
       chrome.runtime.onMessage.removeListener(messageListener);
       console.log('Side panel: Message listener removed.');
