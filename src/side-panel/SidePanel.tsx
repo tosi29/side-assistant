@@ -1,9 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import rehypeHighlight from 'rehype-highlight';
-import 'highlight.js/styles/github.css';
-import styles from './SidePanel.module.css';
+import { useState, useEffect } from 'react';
 import Response from '../app/features/response/Response';
 
 type Request = {
