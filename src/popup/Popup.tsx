@@ -37,24 +37,32 @@ const Popup = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center w-[30rem] h-[15rem]">
+    <div className="px-2 w-[30rem] h-[15rem]">
       <h1 className="text-base mt-2">Popup</h1>
       <br />
-      <span>
+      <div>
         Select Model:
-        <select value={selectedModel} onChange={handleChange}>
+        <select
+          value={selectedModel}
+          onChange={handleChange}
+          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        >
           <option value="gemini-2.0-flash-thinking-exp-01-21">
             Gemini 2.0 Flash Thinking Experimental 01-21
           </option>
           <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
           <option value="gemini-2.0-pro-exp-02-05">Gemini 2.0 Pro Experimental 02-05</option>
         </select>
-      </span>
-      <textarea
-        placeholder="Custom Instruction"
-        value={customInstruction}
-        onChange={handleChangeCustomInstruction}
-      ></textarea>
+      </div>
+      <div>
+        Custom Instruction:
+        <textarea
+          placeholder="Custom Instruction"
+          value={customInstruction}
+          onChange={handleChangeCustomInstruction}
+          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline h-24"
+        />
+      </div>
     </div>
   );
 };
