@@ -20,19 +20,20 @@ const Options = () => {
   };
 
   return (
-    <div className="flex h-screen items-center justify-center">
+    <div className="px-10">
       <h1>Options</h1>
 
       <br />
-      <span>
+      <div>
         Gemini API KEY:
         <input
           type="password"
           value={apiKeyGemini ?? ''}
           onChange={handleChange}
           placeholder="Input Gemini API Key"
+          className="shadow appearance-none border rounded w-full max-w-[240px] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
         />
-      </span>
+      </div>
     </div>
   );
 };
