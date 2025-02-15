@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import Response from '../app/features/response/Response';
+import Chat from '../app/features/chat/Chat';
+import Requesta from '../app/features/request/UserRequest';
 
 type Request = {
   type: string;
@@ -35,9 +37,12 @@ const SidePanel = () => {
   }, []); // 空の依存配列で、初回マウント時のみ実行
 
   return (
-    <>
-      <Response markdownText={responseData ?? 'No Text'} />
-    </>
+    <div className="flex flex-col h-screen justify-between">
+      <div>
+        <Response markdownText={responseData ?? 'No Text'} />
+      </div>
+      <Chat />
+    </div>
   );
 };
 
