@@ -13,27 +13,27 @@ store.subscribe(() => {
 chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({
     id: 'summarize',
-    title: 'Summarize',
+    title: '要約する',
     contexts: ['selection'],
   });
   chrome.contextMenus.create({
     id: 'polish',
-    title: 'Polish',
+    title: '推敲する',
     contexts: ['selection'],
   });
   chrome.contextMenus.create({
     id: 'rephrase',
-    title: 'Rephrase',
+    title: '言い換え表現を探す',
     contexts: ['selection'],
   });
   chrome.contextMenus.create({
     id: 'explain',
-    title: 'Explain',
+    title: '解説する',
     contexts: ['selection'],
   });
   chrome.contextMenus.create({
     id: 'custom',
-    title: 'Custom Instruction',
+    title: '（カスタム命令を実行する）',
     contexts: ['selection'],
   });
 });
