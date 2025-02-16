@@ -41,52 +41,70 @@ chrome.runtime.onInstalled.addListener(() => {
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   if (tab !== undefined && info.selectionText !== undefined) {
     const handleData = (data: string) => {
-      chrome.runtime.sendMessage({ type: 'response', text: data });
+      chrome.runtime.sendMessage({ type: 'response_stream', text: data });
+    };
+
+    const handleCompleted = (data: string) => {
+      chrome.runtime.sendMessage({ type: 'response_completed', text: data });
+    };
+
+    const clearContext = () => {
+      chrome.runtime.sendMessage({ type: 'clear_context' });
     };
 
     switch (info.menuItemId) {
       case 'summarize': {
         chrome.sidePanel.open({ windowId: tab.windowId });
+        clearContext();
         await callGeminiApi(
           '与えられたテキストを要約してください。',
           info.selectionText,
-          handleData
+          handleData,
+          handleCompleted
         );
         break;
       }
       case 'polish': {
         chrome.sidePanel.open({ windowId: tab.windowId });
+        clearContext();
         await callGeminiApi(
           '与えられたテキストを推敲してください。また変更箇所は、別途表形式で変更前と変更後をまとめて出力してください。',
           info.selectionText,
-          handleData
+          handleData,
+          handleCompleted
         );
         break;
       }
       case 'rephrase': {
         chrome.sidePanel.open({ windowId: tab.windowId });
+        clearContext();
         await callGeminiApi(
           '与えられたテキストを言い換える表現を、5つ挙げてください。',
           info.selectionText,
-          handleData
+          handleData,
+          handleCompleted
         );
         break;
       }
       case 'explain': {
         chrome.sidePanel.open({ windowId: tab.windowId });
+        clearContext();
         await callGeminiApi(
           '与えられたテキストを、分かりやすく解説してください。',
           info.selectionText,
-          handleData
+          handleData,
+          handleCompleted
         );
         break;
       }
       case 'custom': {
         chrome.sidePanel.open({ windowId: tab.windowId });
+        clearContext();
         await callGeminiApi(
           (await getCustomInstructionConfiguration()) ?? '', // TODO: 指示がないときの対策
           info.selectionText,
-          handleData
+          handleData,
+          handleCompleted
         );
         break;
       }

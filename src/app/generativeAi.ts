@@ -4,7 +4,8 @@ import { getApiKeyGeminiConfiguration, getSelectedModelConfiguration } from './c
 export const callGeminiApi = async (
   instruction: string,
   prompt: string,
-  onData: (data: string) => void
+  onData: (data: string) => void,
+  onCompleted: (data: string) => void
 ) => {
   const apiKeyGemini = await getApiKeyGeminiConfiguration();
   const selectedModel = await getSelectedModelConfiguration();
@@ -26,4 +27,5 @@ export const callGeminiApi = async (
     response += chunk.text();
     onData(response);
   }
+  onCompleted(response);
 };

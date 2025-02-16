@@ -1,15 +1,26 @@
 import { useState, useEffect } from 'react';
 import Response from '../app/features/response/Response';
 import Chat from '../app/features/chat/Chat';
-import Requesta from '../app/features/request/UserRequest';
+import UserRequest from '../app/features/request/UserRequest';
 
 type Request = {
   type: string;
   text: string;
 };
 
+type Context = {
+  text: string;
+  user: string;
+};
+
 const SidePanel = () => {
-  const [responseData, setResponseData] = useState<string | null>(null);
+  const [context, setContext] = useState<Array<Context>>([
+    {
+      text: 'No text',
+      user: 'bot',
+    },
+  ]);
+  const [streamResponseData, setStreamResponseData] = useState<string | null>(null);
 
   useEffect(() => {
     const messageListener = (
@@ -18,10 +29,22 @@ const SidePanel = () => {
       // sendResponse: (response?: any) => void
     ) => {
       console.log(request);
-      if (request.type === 'response') {
-        const data = request.text;
-        console.log('Side panel: background script からメッセージを受信しました:', data);
-        setResponseData(data); // State を更新
+      if (request.type === 'clear_context') {
+        setContext([]);
+      } else if (request.type === 'response_stream') {
+        console.log('Side panel: background script からメッセージを受信しました:', request);
+        setStreamResponseData(request.text);
+      } else if (request.type === 'response_completed') {
+        console.log('Side panel: background script からメッセージを受信しました:', request);
+        // ストリームの終了を検知したら、contextに移動させてストリーム表示を空にする
+        setContext((prevContext) => [
+          ...prevContext,
+          {
+            text: request.text,
+            user: 'bot',
+          },
+        ]);
+        setStreamResponseData(null);
       }
     };
 
@@ -39,7 +62,15 @@ const SidePanel = () => {
   return (
     <div className="flex flex-col h-screen justify-between">
       <div>
-        <Response markdownText={responseData ?? 'No Text'} />
+        {context.map((c, index) => {
+          if (c.user === 'user') {
+            return <UserRequest key={index} text={c.text} />;
+          }
+          if (c.user === 'bot') {
+            return <Response key={index} markdownText={c.text} />;
+          }
+        })}
+        {streamResponseData ? <Response markdownText={streamResponseData} /> : <></>}
       </div>
       <Chat />
     </div>
