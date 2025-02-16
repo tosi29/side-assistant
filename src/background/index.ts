@@ -43,16 +43,16 @@ chrome.runtime.onInstalled.addListener(() => {
   });
 });
 
+const handleData = (data: string) => {
+  chrome.runtime.sendMessage({ type: 'response_stream', text: data });
+};
+
+const handleCompleted = (data: string) => {
+  chrome.runtime.sendMessage({ type: 'response_completed', text: data });
+};
+
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   if (tab !== undefined && info.selectionText !== undefined) {
-    const handleData = (data: string) => {
-      chrome.runtime.sendMessage({ type: 'response_stream', text: data });
-    };
-
-    const handleCompleted = (data: string) => {
-      chrome.runtime.sendMessage({ type: 'response_completed', text: data });
-    };
-
     const clearContext = () => {
       chrome.runtime.sendMessage({ type: 'clear_context' });
     };
@@ -63,7 +63,7 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
         clearContext();
         await callGeminiApi(
           '与えられたテキストを要約してください。',
-          info.selectionText,
+          [info.selectionText],
           handleData,
           handleCompleted
         );
@@ -74,7 +74,7 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
         clearContext();
         await callGeminiApi(
           '与えられたテキストを推敲してください。また変更箇所は、別途表形式で変更前と変更後をまとめて出力してください。',
-          info.selectionText,
+          [info.selectionText],
           handleData,
           handleCompleted
         );
@@ -85,7 +85,7 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
         clearContext();
         await callGeminiApi(
           '与えられたテキストを言い換える表現を、5つ挙げてください。',
-          info.selectionText,
+          [info.selectionText],
           handleData,
           handleCompleted
         );
@@ -96,7 +96,7 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
         clearContext();
         await callGeminiApi(
           '与えられたテキストを、分かりやすく解説してください。',
-          info.selectionText,
+          [info.selectionText],
           handleData,
           handleCompleted
         );
@@ -107,7 +107,7 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
         clearContext();
         await callGeminiApi(
           (await getCustomInstructionConfiguration()) ?? '', // TODO: 指示がないときの対策
-          info.selectionText,
+          [info.selectionText],
           handleData,
           handleCompleted
         );
@@ -119,6 +119,13 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
         break;
       }
     }
+  }
+});
+
+chrome.runtime.onMessage.addListener((request) => {
+  console.log(request);
+  if (request.type === 'request') {
+    callGeminiApi('', request.context, handleData, handleCompleted);
   }
 });
 

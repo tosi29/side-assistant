@@ -3,7 +3,7 @@ import { getApiKeyGeminiConfiguration, getSelectedModelConfiguration } from './c
 
 export const callGeminiApi = async (
   instruction: string,
-  prompt: string,
+  context: string[],
   onData: (data: string) => void,
   onCompleted: (data: string) => void
 ) => {
@@ -20,7 +20,7 @@ export const callGeminiApi = async (
       instruction +
       '回答は日本語で、Markdown形式で出力してください。「はい、わかりました」などの相槌は回答に含めないでください。',
   });
-  const result = await model.generateContentStream([prompt]);
+  const result = await model.generateContentStream(context);
 
   let response = '';
   for await (const chunk of result.stream) {

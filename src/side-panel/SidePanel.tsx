@@ -63,6 +63,18 @@ const SidePanel = () => {
     };
   }, []); // 空の依存配列で、初回マウント時のみ実行
 
+  const onSubmit = (text: string) => {
+    setContext((prevContext) => [
+      ...prevContext,
+      {
+        text: text,
+        user: 'user',
+      },
+    ]);
+    const texts = context.map((c) => c.text);
+    chrome.runtime.sendMessage({ type: 'request', text: text, context: [...texts, text] });
+  };
+
   return (
     <div className="flex flex-col h-screen justify-between">
       <div>
@@ -76,7 +88,7 @@ const SidePanel = () => {
         })}
         {streamResponseData ? <Response markdownText={streamResponseData} /> : <></>}
       </div>
-      <Chat text={chatText} />
+      <Chat text={chatText} onSubmit={onSubmit} />
     </div>
   );
 };

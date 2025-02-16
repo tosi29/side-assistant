@@ -3,9 +3,10 @@ import { useState } from 'react';
 
 type ChatProps = {
   text: string;
+  onSubmit: (data: string) => void;
 };
 
-const Chat: FC<ChatProps> = ({ text }) => {
+const Chat: FC<ChatProps> = ({ text, onSubmit }) => {
   const [inputText, setInputText] = useState<string>(text);
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -22,6 +23,7 @@ const Chat: FC<ChatProps> = ({ text }) => {
   const handleSubmit = () => {
     console.log('送信!', inputText);
     setInputText('');
+    onSubmit(inputText);
   };
 
   useEffect(() => {
