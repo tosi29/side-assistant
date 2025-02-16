@@ -36,6 +36,11 @@ chrome.runtime.onInstalled.addListener(() => {
     title: '（カスタム命令を実行する）',
     contexts: ['selection'],
   });
+  chrome.contextMenus.create({
+    id: 'forward',
+    title: '（チャット欄に転記する）',
+    contexts: ['selection'],
+  });
 });
 
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
@@ -106,6 +111,11 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
           handleData,
           handleCompleted
         );
+        break;
+      }
+      case 'forward': {
+        chrome.sidePanel.open({ windowId: tab.windowId });
+        chrome.runtime.sendMessage({ type: 'forward', text: info.selectionText });
         break;
       }
     }

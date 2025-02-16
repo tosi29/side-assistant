@@ -21,6 +21,7 @@ const SidePanel = () => {
     },
   ]);
   const [streamResponseData, setStreamResponseData] = useState<string | null>(null);
+  const [chatText, setChatText] = useState<string>('');
 
   useEffect(() => {
     const messageListener = (
@@ -45,6 +46,9 @@ const SidePanel = () => {
           },
         ]);
         setStreamResponseData(null);
+      } else if (request.type === 'forward') {
+        console.log('Side panel: background script からメッセージを受信しました:', request);
+        setChatText(request.text);
       }
     };
 
@@ -72,7 +76,7 @@ const SidePanel = () => {
         })}
         {streamResponseData ? <Response markdownText={streamResponseData} /> : <></>}
       </div>
-      <Chat />
+      <Chat text={chatText} />
     </div>
   );
 };

@@ -1,8 +1,12 @@
-import React from 'react';
+import React, { FC, useEffect } from 'react';
 import { useState } from 'react';
 
-const Response = () => {
-  const [inputText, setInputText] = useState<string>('');
+type ChatProps = {
+  text: string;
+};
+
+const Chat: FC<ChatProps> = ({ text }) => {
+  const [inputText, setInputText] = useState<string>(text);
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInputText(e.target.value);
@@ -20,6 +24,10 @@ const Response = () => {
     setInputText('');
   };
 
+  useEffect(() => {
+    setInputText(text);
+  }, [text]);
+
   return (
     <div className="px-2">
       <textarea
@@ -32,4 +40,4 @@ const Response = () => {
   );
 };
 
-export default Response;
+export default Chat;
