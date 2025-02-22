@@ -13,12 +13,6 @@ const manifest = defineManifest(async (env) => ({
   background: {
     service_worker: 'background/index.ts',
   },
-  content_scripts: [
-    {
-      matches: ['http://*/*', 'https://*/*', 'file:///*'],
-      js: ['content/index.tsx'],
-    },
-  ],
   host_permissions: ['<all_urls>'],
   options_ui: {
     page: 'options/options.html',
