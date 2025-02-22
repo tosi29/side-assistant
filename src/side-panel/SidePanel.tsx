@@ -14,12 +14,7 @@ type Context = {
 };
 
 const SidePanel = () => {
-  const [context, setContext] = useState<Array<Context>>([
-    {
-      text: 'No text',
-      user: 'bot',
-    },
-  ]);
+  const [context, setContext] = useState<Array<Context>>([]);
   const [streamResponseData, setStreamResponseData] = useState<string | null>(null);
   const [chatText, setChatText] = useState<string>('');
 
