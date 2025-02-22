@@ -8,7 +8,7 @@ import { version } from '../package.json';
 const manifest = defineManifest(async (env) => ({
   manifest_version: 3,
   name: `${env.mode === 'development' ? '[Dev] ' : ''}Side Assistant`,
-  description: 'Browser Extension, TypeScript, React',
+  description: 'コンテキストメニューやサイドパネルから、Geminiを呼び出すことができます',
   version,
   background: {
     service_worker: 'background/index.ts',
