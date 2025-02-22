@@ -19,10 +19,7 @@ export default defineConfig({
   build: {
     outDir: resolve(__dirname, 'dist'),
     rollupOptions: {
-      input: {
-        // see web_accessible_resources in the manifest config
-        welcome: join(__dirname, 'src/welcome/welcome.html'),
-      },
+      input: {},
       output: {
         chunkFileNames: 'assets/chunk-[hash].js',
       },
