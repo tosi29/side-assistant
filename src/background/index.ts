@@ -11,35 +11,21 @@ store.subscribe(() => {
 });
 
 chrome.runtime.onInstalled.addListener(() => {
-  chrome.contextMenus.create({
-    id: 'summarize',
-    title: '要約する',
-    contexts: ['selection'],
-  });
-  chrome.contextMenus.create({
-    id: 'polish',
-    title: '推敲する',
-    contexts: ['selection'],
-  });
-  chrome.contextMenus.create({
-    id: 'rephrase',
-    title: '言い換え表現を探す',
-    contexts: ['selection'],
-  });
-  chrome.contextMenus.create({
-    id: 'explain',
-    title: '解説する',
-    contexts: ['selection'],
-  });
-  chrome.contextMenus.create({
-    id: 'custom',
-    title: '（カスタム命令を実行する）',
-    contexts: ['selection'],
-  });
-  chrome.contextMenus.create({
-    id: 'forward',
-    title: '（チャット欄に転記する）',
-    contexts: ['selection'],
+  const contextMenuItems = [
+    { id: 'summarize', title: '要約する' },
+    { id: 'polish', title: '推敲する' },
+    { id: 'rephrase', title: '言い換え表現を探す' },
+    { id: 'explain', title: '解説する' },
+    { id: 'custom', title: '（カスタム命令を実行する）' },
+    { id: 'forward', title: '（チャット欄に転記する）' },
+  ];
+
+  contextMenuItems.forEach((item) => {
+    chrome.contextMenus.create({
+      id: item.id,
+      title: item.title,
+      contexts: ['selection'],
+    });
   });
 });
 
