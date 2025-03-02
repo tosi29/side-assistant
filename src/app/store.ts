@@ -13,18 +13,16 @@ import {
 } from 'reduxjs-toolkit-persist';
 import type { WebStorage } from 'reduxjs-toolkit-persist/lib/types';
 
-import counterReducer from './features/counter/counterSlice';
-
 const persistConfig = {
   key: 'root',
   storage: localStorage as WebStorage,
 };
 
 const reducers = combineReducers({
-  counter: counterReducer,
+  dummy: (state = {}) => state,
 });
 
-const persistedReducer: typeof reducers = persistReducer(persistConfig, reducers);
+const persistedReducer = persistReducer(persistConfig, reducers);
 const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
