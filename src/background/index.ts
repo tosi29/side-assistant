@@ -1,6 +1,7 @@
 import store, { initializeWrappedStore } from '../app/store';
 import { callGeminiApi } from '../app/generativeAi';
 import { getCustomInstructionConfiguration } from '../app/configurations';
+import { Part } from '@google/generative-ai';
 
 initializeWrappedStore();
 
@@ -116,26 +117,47 @@ chrome.runtime.onMessage.addListener((request) => {
     // TODO: サイドパネルを開いてコンテキストをクリアする
     //chrome.sidePanel.open({ windowId: tab.windowId });
     //clearContext();
-    const { action, url } = request.payload;
+    const { action, pdfUrl } = request.payload;
+    console.log(action, pdfUrl);
+
     (async () => {
       try {
-        const response = await fetch(url);
-        if (!response.ok) {
-          throw new Error(`Failed to fetch PDF: ${response.status} ${response.statusText}`);
-        }
-        const pdfData = await response.blob();
+        console.log(pdfUrl);
+        const pdfData = await fetch(pdfUrl)
+          .then((response) => response.arrayBuffer())
+          .catch((error) => {
+            throw new Error(`Failed to fetch PDF: ${error}`);
+          });
 
-        let prompt = '';
-        if (action === 'summarize') {
-          prompt = 'このPDFファイルの内容を要約してください。';
-        } else if (action === 'generate_toc') {
-          prompt =
-            'このPDFファイルから目次（見出しに相当する情報およびページ数）を抽出してください。もし目次がなければ生成してください。';
-        }
+        const reader = new FileReader();
+        reader.onloadend = async () => {
+          if (reader.result) {
+            const base64String = reader.result.toString().split(',')[1]; // Data URLからBase64部分を抽出
+            const pdfPart: Part = {
+              inlineData: {
+                data: base64String,
+                mimeType: 'application/pdf',
+              },
+            };
+            let prompt = '';
+            if (action === 'summarize') {
+              prompt = 'このPDFファイルの内容を要約してください。';
+            } else if (action === 'generate_toc') {
+              prompt =
+                'このPDFファイルから目次（見出しに相当する情報およびページ数）を抽出してください。もし目次がなければ生成してください。';
+            }
 
-        // TODO: Send PDF data to Gemini API and handle response
-        // For now, we are just sending the URL, but we might need to send the actual PDF data
-        await callGeminiApi(prompt, [], handleData, handleCompleted, url);
+            await callGeminiApi(prompt, [pdfPart], handleData, handleCompleted);
+          }
+        };
+        reader.onerror = (error) => {
+          console.error('FileReader error:', error);
+          chrome.runtime.sendMessage({
+            type: 'response_error',
+            text: 'PDFの処理中にエラーが発生しました。',
+          });
+        };
+        reader.readAsDataURL(new Blob([pdfData], { type: 'application/pdf' }));
       } catch (error) {
         console.error(error);
         chrome.runtime.sendMessage({

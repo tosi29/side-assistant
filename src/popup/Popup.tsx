@@ -72,7 +72,7 @@ const Popup = () => {
       type: 'process_pdf',
       payload: {
         action: 'summarize',
-        url,
+        pdfUrl: url,
       },
     });
   };
@@ -93,7 +93,7 @@ const Popup = () => {
       type: 'process_pdf',
       payload: {
         action: 'generate_toc',
-        url,
+        pdfUrl: url,
       },
     });
   };

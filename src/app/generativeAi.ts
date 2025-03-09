@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenerativeAI, Part } from '@google/generative-ai';
 import { getApiKeyGeminiConfiguration, getSelectedModelConfiguration } from './configurations';
 
 const sleep = (ms: number) => {
@@ -7,11 +7,9 @@ const sleep = (ms: number) => {
 
 export const callGeminiApi = async (
   instruction: string,
-  context: string[],
+  context: (string | Part)[],
   onData: (data: string) => void,
-  onCompleted: (data: string) => void,
-  pdfUrl?: string,
-  pdfData?: Blob
+  onCompleted: (data: string) => void
 ) => {
   const apiKeyGemini = await getApiKeyGeminiConfiguration();
   const selectedModel = await getSelectedModelConfiguration();
@@ -35,9 +33,7 @@ export const callGeminiApi = async (
       '回答は日本語で、Markdown形式で出力してください。「はい、わかりました」などの相槌は回答に含めないでください。',
   });
 
-  const request = pdfUrl ? [...context, pdfUrl] : context;
-  // TODO: If pdfData is provided, use it instead of the URL
-  const result = await model.generateContentStream(request);
+  const result = await model.generateContentStream(context);
 
   let response = '';
   for await (const chunk of result.stream) {
