@@ -105,7 +105,7 @@ const Popup = () => {
       {isPdfTab ? (
         <div id="pdfMode">
           <h2 className="text-base mt-2">PDF Mode</h2>
-          <div className="flex flex-col space-y-2">
+          <div className="flex flex-col space-y-2 my-2">
             <button
               id="summarizePdfBtn"
               onClick={handleSummarizePdf}
@@ -122,12 +122,6 @@ const Popup = () => {
             >
               目次を生成
             </button>
-            <input
-              type="text"
-              id="pageRange"
-              placeholder="ページ範囲 (例: 1-5)"
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            />
           </div>
         </div>
       ) : (
