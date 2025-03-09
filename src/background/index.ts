@@ -171,22 +171,34 @@ chrome.runtime.onMessage.addListener((request) => {
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (changeInfo.status === 'complete' && tab?.url) {
-    const isPdf =
-      tab.url.toLowerCase().endsWith('.pdf') ||
-      (tab.url.startsWith('chrome-extension://') && tab.url.includes('pdfviewer'));
-
-    // PDFステータスを保存
-    chrome.storage.local.set({ isPdfTab: isPdf, currentTabId: tabId });
-
-    // バッジやアイコンを更新してPDF対応を視覚的に表示
-    if (isPdf) {
-      chrome.action.setBadgeText({ text: 'PDF', tabId });
-    } else {
-      chrome.action.setBadgeText({ text: '', tabId });
-    }
-    // Send message to popup to update UI
-    chrome.runtime.sendMessage({ type: 'pdf_status', isPdfTab: isPdf });
+    updateBadgeAndPopup(tabId, tab.url); // 関数化
   }
 });
+
+chrome.tabs.onActivated.addListener(async (activeInfo) => {
+  const tab = await chrome.tabs.get(activeInfo.tabId);
+  if (tab?.url) {
+    updateBadgeAndPopup(activeInfo.tabId, tab.url); // 関数化
+  }
+});
+
+const updateBadgeAndPopup = (tabId: number, url: string) => {
+  // 関数を定義
+  const isPdf =
+    url.toLowerCase().endsWith('.pdf') ||
+    (url.startsWith('chrome-extension://') && url.includes('pdfviewer'));
+
+  // PDFステータスを保存
+  chrome.storage.local.set({ isPdfTab: isPdf, currentTabId: tabId });
+
+  // バッジやアイコンを更新してPDF対応を視覚的に表示
+  if (isPdf) {
+    chrome.action.setBadgeText({ text: 'PDF', tabId });
+  } else {
+    chrome.action.setBadgeText({ text: '', tabId });
+  }
+  // Send message to popup to update UI
+  chrome.runtime.sendMessage({ type: 'pdf_status', isPdfTab: isPdf });
+};
 
 export {};
