@@ -38,12 +38,12 @@ const handleCompleted = (data: string) => {
   chrome.runtime.sendMessage({ type: 'response_completed', text: data });
 };
 
+const clearContext = () => {
+  chrome.runtime.sendMessage({ type: 'clear_context' });
+};
+
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   if (tab !== undefined && info.selectionText !== undefined) {
-    const clearContext = () => {
-      chrome.runtime.sendMessage({ type: 'clear_context' });
-    };
-
     switch (info.menuItemId) {
       case 'summarize': {
         chrome.sidePanel.open({ windowId: tab.windowId });
@@ -116,7 +116,7 @@ chrome.runtime.onMessage.addListener((request) => {
   } else if (request.type === 'process_pdf') {
     // TODO: サイドパネルを開いてコンテキストをクリアする
     //chrome.sidePanel.open({ windowId: tab.windowId });
-    //clearContext();
+    clearContext();
     const { action, pdfUrl } = request.payload;
     console.log(action, pdfUrl);
 
