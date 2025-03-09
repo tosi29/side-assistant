@@ -36,7 +36,7 @@ const Popup = () => {
       });
     })();
 
-    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    chrome.runtime.onMessage.addListener((request) => {
       if (request.type === 'pdf_status') {
         setIsPdfTab(request.isPdfTab);
       }
