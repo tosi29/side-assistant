@@ -112,6 +112,38 @@ chrome.runtime.onMessage.addListener((request) => {
   console.log(request);
   if (request.type === 'request') {
     callGeminiApi('', request.context, handleData, handleCompleted);
+  } else if (request.type === 'process_pdf') {
+    // TODO: サイドパネルを開いてコンテキストをクリアする
+    //chrome.sidePanel.open({ windowId: tab.windowId });
+    //clearContext();
+    const { action, url } = request.payload;
+    (async () => {
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`Failed to fetch PDF: ${response.status} ${response.statusText}`);
+        }
+        const pdfData = await response.blob();
+
+        let prompt = '';
+        if (action === 'summarize') {
+          prompt = 'このPDFファイルの内容を要約してください。';
+        } else if (action === 'generate_toc') {
+          prompt =
+            'このPDFファイルから目次（見出しに相当する情報およびページ数）を抽出してください。もし目次がなければ生成してください。';
+        }
+
+        // TODO: Send PDF data to Gemini API and handle response
+        // For now, we are just sending the URL, but we might need to send the actual PDF data
+        await callGeminiApi(prompt, [], handleData, handleCompleted, url);
+      } catch (error) {
+        console.error(error);
+        chrome.runtime.sendMessage({
+          type: 'response_error',
+          text: error instanceof Error ? error.message : 'An unknown error occurred',
+        });
+      }
+    })();
   }
 });
 

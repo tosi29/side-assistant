@@ -5,6 +5,7 @@ import {
   getCustomInstructionConfiguration,
   setCustomInstructionConfiguration,
 } from '../app/configurations';
+import store, { setCurrentTabId } from '../app/store';
 
 const Popup = () => {
   const [selectedModel, setSelectedModel] = useState<string>('gemini-2.0-flash-thinking-exp-01-21');
@@ -22,6 +23,17 @@ const Popup = () => {
       if (customInstructionValue) {
         setCustomInstruction(customInstructionValue);
       }
+
+      // Load isPdfTab and currentTabId from storage
+      chrome.storage.local.get(['isPdfTab', 'currentTabId'], (result) => {
+        if (result.isPdfTab !== undefined) {
+          setIsPdfTab(result.isPdfTab);
+        }
+        if (result.currentTabId !== undefined) {
+          // Dispatch action to update currentTabId in Redux store
+          store.dispatch(setCurrentTabId(result.currentTabId));
+        }
+      });
     })();
 
     chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -43,14 +55,47 @@ const Popup = () => {
     setCustomInstruction(newValue);
   };
 
-  const handleSummarizePdf = () => {
-    console.log('Summarize PDF clicked');
-    // TODO: Implement PDF summarization logic
+  const handleSummarizePdf = async () => {
+    const { currentTabId } = store.getState();
+    if (currentTabId === undefined) {
+      console.error('currentTabId is undefined');
+      return;
+    }
+    const tab = await chrome.tabs.get(currentTabId);
+    const url = tab.url;
+    if (url === undefined) {
+      console.error('url is undefined');
+      return;
+    }
+
+    chrome.runtime.sendMessage({
+      type: 'process_pdf',
+      payload: {
+        action: 'summarize',
+        url,
+      },
+    });
   };
 
-  const handleGenerateToc = () => {
-    console.log('Generate TOC clicked');
-    // TODO: Implement TOC generation logic
+  const handleGenerateToc = async () => {
+    const { currentTabId } = store.getState();
+    if (currentTabId === undefined) {
+      console.error('currentTabId is undefined');
+      return;
+    }
+    const tab = await chrome.tabs.get(currentTabId);
+    const url = tab.url;
+    if (url === undefined) {
+      console.error('url is undefined');
+      return;
+    }
+    chrome.runtime.sendMessage({
+      type: 'process_pdf',
+      payload: {
+        action: 'generate_toc',
+        url,
+      },
+    });
   };
 
   return (

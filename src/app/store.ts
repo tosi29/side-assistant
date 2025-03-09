@@ -1,5 +1,11 @@
 import { wrapStore } from '@eduardoac-skimlinks/webext-redux';
-import { combineReducers, configureStore, type Action, type ThunkAction } from '@reduxjs/toolkit';
+import {
+  combineReducers,
+  configureStore,
+  createSlice,
+  type Action,
+  type ThunkAction,
+} from '@reduxjs/toolkit';
 import { localStorage } from 'redux-persist-webextension-storage';
 import {
   FLUSH,
@@ -18,8 +24,18 @@ const persistConfig = {
   storage: localStorage as WebStorage,
 };
 
+// currentTabId の slice を作成
+const currentTabIdSlice = createSlice({
+  name: 'currentTabId',
+  initialState: null as number | null,
+  reducers: {
+    setCurrentTabId: (state, action) => action.payload,
+  },
+});
+
 const reducers = combineReducers({
   dummy: (state = {}) => state,
+  currentTabId: currentTabIdSlice.reducer, // currentTabId reducer を追加
 });
 
 const persistedReducer = persistReducer(persistConfig, reducers);
@@ -45,5 +61,8 @@ export type AppThunk<ReturnType = void> = ThunkAction<
   unknown,
   Action<string>
 >;
+
+// currentTabId の action creator をエクスポート
+export const { setCurrentTabId } = currentTabIdSlice.actions;
 
 export default store;
