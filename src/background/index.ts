@@ -145,6 +145,8 @@ chrome.runtime.onMessage.addListener((request) => {
             } else if (action === 'generate_toc') {
               prompt =
                 'このPDFファイルから目次（見出しに相当する情報およびページ数）を抽出してください。もし目次がなければ生成してください。';
+            } else if (action === 'markdown') {
+              prompt = 'このPDFファイルをMarkdown形式に変換してください。';
             }
 
             await callGeminiApi(prompt, [pdfPart], handleData, handleCompleted);

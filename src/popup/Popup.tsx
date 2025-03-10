@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+
 import {
   getSelectedModelConfiguration,
   setSelectedModelConfiguration,
@@ -98,6 +99,27 @@ const Popup = () => {
     });
   };
 
+  const handleMarkdownPdf = async () => {
+    const { currentTabId } = store.getState();
+    if (currentTabId === undefined) {
+      console.error('currentTabId is undefined');
+      return;
+    }
+    const tab = await chrome.tabs.get(currentTabId);
+    const url = tab.url;
+    if (url === undefined) {
+      console.error('url is undefined');
+      return;
+    }
+    chrome.runtime.sendMessage({
+      type: 'process_pdf',
+      payload: {
+        action: 'markdown',
+        pdfUrl: url,
+      },
+    });
+  };
+
   return (
     <div className="px-2 w-[30rem] h-[auto]">
       <h1 className="text-base mt-2">Popup</h1>
@@ -136,6 +158,14 @@ const Popup = () => {
                 type="button"
               >
                 目次を生成
+              </button>
+              <button
+                id="markdownPdfBtn"
+                onClick={handleMarkdownPdf}
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                type="button"
+              >
+                Markdown化
               </button>
             </div>
           </div>
