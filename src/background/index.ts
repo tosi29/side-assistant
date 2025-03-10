@@ -114,7 +114,7 @@ chrome.runtime.onMessage.addListener((request) => {
   if (request.type === 'request') {
     callGeminiApi('', request.context, handleData, handleCompleted);
   } else if (request.type === 'process_pdf') {
-    // TODO: サイドパネルを開いてコンテキストをクリアする
+    // TODO: サイドパネルを開く
     //chrome.sidePanel.open({ windowId: tab.windowId });
     clearContext();
     const { action, pdfUrl } = request.payload;
@@ -171,19 +171,18 @@ chrome.runtime.onMessage.addListener((request) => {
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (changeInfo.status === 'complete' && tab?.url) {
-    updateBadgeAndPopup(tabId, tab.url); // 関数化
+    updateBadgeAndPopup(tabId, tab.url);
   }
 });
 
 chrome.tabs.onActivated.addListener(async (activeInfo) => {
   const tab = await chrome.tabs.get(activeInfo.tabId);
   if (tab?.url) {
-    updateBadgeAndPopup(activeInfo.tabId, tab.url); // 関数化
+    updateBadgeAndPopup(activeInfo.tabId, tab.url);
   }
 });
 
 const updateBadgeAndPopup = (tabId: number, url: string) => {
-  // 関数を定義
   const isPdf =
     url.toLowerCase().endsWith('.pdf') ||
     (url.startsWith('chrome-extension://') && url.includes('pdfviewer'));
