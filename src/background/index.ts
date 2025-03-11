@@ -2,6 +2,7 @@ import store, { initializeWrappedStore } from '../app/store';
 import { callGeminiApi } from '../app/generativeAi';
 import { getCustomInstructionConfiguration } from '../app/configurations';
 import { Part } from '@google/generative-ai';
+import { Usecase } from '../typings';
 
 initializeWrappedStore();
 
@@ -30,6 +31,59 @@ chrome.runtime.onInstalled.addListener(() => {
   });
 });
 
+const usecases: Record<string, Usecase> = {
+  summarize: {
+    id: 'summarize',
+    title: '要約する',
+    systemPrompt: '与えられたテキストを要約してください。',
+  },
+  polish: {
+    id: 'polish',
+    title: '推敲する',
+    systemPrompt:
+      '与えられたテキストを推敲してください。また変更箇所は、別途表形式で変更前と変更後をまとめて出力してください。',
+  },
+  rephrase: {
+    id: 'rephrase',
+    title: '言い換え表現を探す',
+    systemPrompt: '与えられたテキストを言い換える表現を、5つ挙げてください。',
+  },
+  explain: {
+    id: 'explain',
+    title: '解説する',
+    systemPrompt: '与えられたテキストを、分かりやすく解説してください。',
+  },
+  custom: {
+    id: 'custom',
+    title: '（カスタム命令を実行する）',
+    systemPrompt: '', // Dynamically loaded in the handler
+  },
+  forward: {
+    id: 'forward',
+    title: '（チャット欄に転記する）',
+    systemPrompt: '', // Not used in this case
+  },
+};
+
+const usecasesForPdf: Record<string, Usecase> = {
+  summarize: {
+    id: 'summarize',
+    title: 'PDFを要約する',
+    systemPrompt: 'このPDFファイルの内容を要約してください。',
+  },
+  generate_toc: {
+    id: 'generate_toc',
+    title: 'PDFの目次を生成する',
+    systemPrompt:
+      'このPDFファイルから目次（見出しに相当する情報およびページ数）を抽出してください。もし目次がなければ生成してください。',
+  },
+  markdown: {
+    id: 'markdown',
+    title: 'PDFをMarkdownに変換する',
+    systemPrompt: 'このPDFファイルをMarkdown形式に変換してください。',
+  },
+};
+
 const handleData = (data: string) => {
   chrome.runtime.sendMessage({ type: 'response_stream', text: data });
 };
@@ -43,69 +97,26 @@ const clearContext = () => {
 };
 
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
-  if (tab !== undefined && info.selectionText !== undefined) {
-    switch (info.menuItemId) {
-      case 'summarize': {
-        chrome.sidePanel.open({ windowId: tab.windowId });
-        clearContext();
-        await callGeminiApi(
-          '与えられたテキストを要約してください。',
-          [info.selectionText],
-          handleData,
-          handleCompleted
-        );
-        break;
-      }
-      case 'polish': {
-        chrome.sidePanel.open({ windowId: tab.windowId });
-        clearContext();
-        await callGeminiApi(
-          '与えられたテキストを推敲してください。また変更箇所は、別途表形式で変更前と変更後をまとめて出力してください。',
-          [info.selectionText],
-          handleData,
-          handleCompleted
-        );
-        break;
-      }
-      case 'rephrase': {
-        chrome.sidePanel.open({ windowId: tab.windowId });
-        clearContext();
-        await callGeminiApi(
-          '与えられたテキストを言い換える表現を、5つ挙げてください。',
-          [info.selectionText],
-          handleData,
-          handleCompleted
-        );
-        break;
-      }
-      case 'explain': {
-        chrome.sidePanel.open({ windowId: tab.windowId });
-        clearContext();
-        await callGeminiApi(
-          '与えられたテキストを、分かりやすく解説してください。',
-          [info.selectionText],
-          handleData,
-          handleCompleted
-        );
-        break;
-      }
-      case 'custom': {
-        chrome.sidePanel.open({ windowId: tab.windowId });
-        clearContext();
-        await callGeminiApi(
-          (await getCustomInstructionConfiguration()) ?? '', // TODO: 指示がないときの対策
-          [info.selectionText],
-          handleData,
-          handleCompleted
-        );
-        break;
-      }
-      case 'forward': {
-        chrome.sidePanel.open({ windowId: tab.windowId });
-        chrome.runtime.sendMessage({ type: 'forward', text: info.selectionText });
-        break;
-      }
-    }
+  if (tab === undefined || info.selectionText === undefined) {
+    return;
+  }
+
+  const usecase = usecases[info.menuItemId];
+  if (!usecase) {
+    return;
+  }
+
+  chrome.sidePanel.open({ windowId: tab.windowId });
+  clearContext();
+
+  if (usecase.id === 'custom') {
+    usecase.systemPrompt = (await getCustomInstructionConfiguration()) ?? '';
+  }
+
+  if (usecase.id === 'forward') {
+    chrome.runtime.sendMessage({ type: 'forward', text: info.selectionText });
+  } else {
+    await callGeminiApi(usecase.systemPrompt, [info.selectionText], handleData, handleCompleted);
   }
 });
 
@@ -141,17 +152,17 @@ chrome.runtime.onMessage.addListener((request) => {
                   mimeType: 'application/pdf',
                 },
               };
-              let prompt = '';
-              if (action === 'summarize') {
-                prompt = 'このPDFファイルの内容を要約してください。';
-              } else if (action === 'generate_toc') {
-                prompt =
-                  'このPDFファイルから目次（見出しに相当する情報およびページ数）を抽出してください。もし目次がなければ生成してください。';
-              } else if (action === 'markdown') {
-                prompt = 'このPDFファイルをMarkdown形式に変換してください。';
+              const usecase = usecasesForPdf[action];
+              if (!usecase) {
+                console.error('Unknown PDF action:', action);
+                chrome.runtime.sendMessage({
+                  type: 'response_error',
+                  text: `Unknown PDF action: ${action}`,
+                });
+                return;
               }
 
-              await callGeminiApi(prompt, [pdfPart], handleData, handleCompleted);
+              await callGeminiApi(usecase.systemPrompt, [pdfPart], handleData, handleCompleted);
             }
           };
           reader.onerror = (error) => {
