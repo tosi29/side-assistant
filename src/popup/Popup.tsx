@@ -7,6 +7,7 @@ import {
   setCustomInstructionConfiguration,
 } from '../app/configurations';
 import store, { setCurrentTabId } from '../app/store';
+import { usecases, usecasesForPdf } from '../app/usecases';
 
 const Popup = () => {
   const [selectedModel, setSelectedModel] = useState<string>('gemini-2.0-flash-thinking-exp-01-21');
@@ -72,7 +73,7 @@ const Popup = () => {
     chrome.runtime.sendMessage({
       type: 'process_pdf',
       payload: {
-        action: 'summarize',
+        usecaseId: 'summarize',
         pdfUrl: url,
       },
     });
@@ -93,7 +94,7 @@ const Popup = () => {
     chrome.runtime.sendMessage({
       type: 'process_pdf',
       payload: {
-        action: 'generate_toc',
+        usecaseId: 'generate_toc',
         pdfUrl: url,
       },
     });
@@ -114,7 +115,7 @@ const Popup = () => {
     chrome.runtime.sendMessage({
       type: 'process_pdf',
       payload: {
-        action: 'markdown',
+        usecaseId: 'markdown',
         pdfUrl: url,
       },
     });
@@ -149,7 +150,7 @@ const Popup = () => {
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                 type="button"
               >
-                PDFを要約
+                {usecasesForPdf.summarize.title}
               </button>
               <button
                 id="generateTocBtn"
@@ -157,7 +158,7 @@ const Popup = () => {
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                 type="button"
               >
-                目次を生成
+                {usecasesForPdf.generate_toc.title}
               </button>
               <button
                 id="markdownPdfBtn"
@@ -165,7 +166,7 @@ const Popup = () => {
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                 type="button"
               >
-                Markdown化
+                {usecasesForPdf.markdown.title}
               </button>
             </div>
           </div>
