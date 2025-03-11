@@ -114,60 +114,63 @@ chrome.runtime.onMessage.addListener((request) => {
   if (request.type === 'request') {
     callGeminiApi('', request.context, handleData, handleCompleted);
   } else if (request.type === 'process_pdf') {
-    // TODO: サイドパネルを開く
-    //chrome.sidePanel.open({ windowId: tab.windowId });
-    clearContext();
-    const { action, pdfUrl } = request.payload;
-    console.log(action, pdfUrl);
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      if (tabs[0] && tabs[0].windowId) {
+        chrome.sidePanel.open({ windowId: tabs[0].windowId });
+      }
+      clearContext();
+      const { action, pdfUrl } = request.payload;
+      console.log(action, pdfUrl);
 
-    (async () => {
-      try {
-        console.log(pdfUrl);
-        const pdfData = await fetch(pdfUrl)
-          .then((response) => response.arrayBuffer())
-          .catch((error) => {
-            throw new Error(`Failed to fetch PDF: ${error}`);
-          });
+      (async () => {
+        try {
+          console.log(pdfUrl);
+          const pdfData = await fetch(pdfUrl)
+            .then((response) => response.arrayBuffer())
+            .catch((error) => {
+              throw new Error(`Failed to fetch PDF: ${error}`);
+            });
 
-        const reader = new FileReader();
-        reader.onloadend = async () => {
-          if (reader.result) {
-            const base64String = reader.result.toString().split(',')[1]; // Data URLからBase64部分を抽出
-            const pdfPart: Part = {
-              inlineData: {
-                data: base64String,
-                mimeType: 'application/pdf',
-              },
-            };
-            let prompt = '';
-            if (action === 'summarize') {
-              prompt = 'このPDFファイルの内容を要約してください。';
-            } else if (action === 'generate_toc') {
-              prompt =
-                'このPDFファイルから目次（見出しに相当する情報およびページ数）を抽出してください。もし目次がなければ生成してください。';
-            } else if (action === 'markdown') {
-              prompt = 'このPDFファイルをMarkdown形式に変換してください。';
+          const reader = new FileReader();
+          reader.onloadend = async () => {
+            if (reader.result) {
+              const base64String = reader.result.toString().split(',')[1]; // Data URLからBase64部分を抽出
+              const pdfPart: Part = {
+                inlineData: {
+                  data: base64String,
+                  mimeType: 'application/pdf',
+                },
+              };
+              let prompt = '';
+              if (action === 'summarize') {
+                prompt = 'このPDFファイルの内容を要約してください。';
+              } else if (action === 'generate_toc') {
+                prompt =
+                  'このPDFファイルから目次（見出しに相当する情報およびページ数）を抽出してください。もし目次がなければ生成してください。';
+              } else if (action === 'markdown') {
+                prompt = 'このPDFファイルをMarkdown形式に変換してください。';
+              }
+
+              await callGeminiApi(prompt, [pdfPart], handleData, handleCompleted);
             }
-
-            await callGeminiApi(prompt, [pdfPart], handleData, handleCompleted);
-          }
-        };
-        reader.onerror = (error) => {
-          console.error('FileReader error:', error);
+          };
+          reader.onerror = (error) => {
+            console.error('FileReader error:', error);
+            chrome.runtime.sendMessage({
+              type: 'response_error',
+              text: 'PDFの処理中にエラーが発生しました。',
+            });
+          };
+          reader.readAsDataURL(new Blob([pdfData], { type: 'application/pdf' }));
+        } catch (error) {
+          console.error(error);
           chrome.runtime.sendMessage({
             type: 'response_error',
-            text: 'PDFの処理中にエラーが発生しました。',
+            text: error instanceof Error ? error.message : 'An unknown error occurred',
           });
-        };
-        reader.readAsDataURL(new Blob([pdfData], { type: 'application/pdf' }));
-      } catch (error) {
-        console.error(error);
-        chrome.runtime.sendMessage({
-          type: 'response_error',
-          text: error instanceof Error ? error.message : 'An unknown error occurred',
-        });
-      }
-    })();
+        }
+      })();
+    });
   }
 });
 
