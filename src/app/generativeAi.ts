@@ -28,9 +28,7 @@ export const callGeminiApi = async (
   const genai = new GoogleGenerativeAI(apiKeyGemini);
   const model = genai.getGenerativeModel({
     model: selectedModel,
-    systemInstruction:
-      instruction +
-      '回答は日本語で、Markdown形式で出力してください。「はい、わかりました」などの相槌は回答に含めないでください。',
+    systemInstruction: instruction,
   });
 
   const result = await model.generateContentStream(context);
