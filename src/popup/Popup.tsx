@@ -7,7 +7,7 @@ import {
   setCustomInstructionConfiguration,
 } from '../app/configurations';
 import store, { setCurrentTabId } from '../app/store';
-import { usecases, usecasesForPdf } from '../app/usecases';
+import { usecasesForPdf } from '../app/usecases';
 
 const Popup = () => {
   const [selectedModel, setSelectedModel] = useState<string>('gemini-2.0-flash-thinking-exp-01-21');
