@@ -3,15 +3,12 @@ import { useEffect, useState } from 'react';
 import {
   getSelectedModelConfiguration,
   setSelectedModelConfiguration,
-  getCustomInstructionConfiguration,
-  setCustomInstructionConfiguration,
 } from '../app/configurations';
 import store, { setCurrentTabId } from '../app/store';
 import { usecasesForPdf } from '../app/usecases';
 
 const Popup = () => {
   const [selectedModel, setSelectedModel] = useState<string>('gemini-2.0-flash-thinking-exp-01-21');
-  const [customInstruction, setCustomInstruction] = useState<string>('');
   const [isPdfTab, setIsPdfTab] = useState<boolean>(false);
 
   useEffect(() => {
@@ -21,18 +18,12 @@ const Popup = () => {
         setSelectedModel(value);
       }
 
-      const customInstructionValue = await getCustomInstructionConfiguration();
-      if (customInstructionValue) {
-        setCustomInstruction(customInstructionValue);
-      }
-
       // Load isPdfTab and currentTabId from storage
       chrome.storage.local.get(['isPdfTab', 'currentTabId'], (result) => {
         if (result.isPdfTab !== undefined) {
           setIsPdfTab(result.isPdfTab);
         }
         if (result.currentTabId !== undefined) {
-          // Dispatch action to update currentTabId in Redux store
           store.dispatch(setCurrentTabId(result.currentTabId));
         }
       });
@@ -49,12 +40,6 @@ const Popup = () => {
     const newValue = e.target.value;
     setSelectedModelConfiguration(newValue);
     setSelectedModel(newValue);
-  };
-
-  const handleChangeCustomInstruction = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const newValue = e.target.value;
-    setCustomInstructionConfiguration(newValue);
-    setCustomInstruction(newValue);
   };
 
   const handleSummarizePdf = async () => {
@@ -170,17 +155,7 @@ const Popup = () => {
               </button>
             </div>
           </div>
-        ) : (
-          <div>
-            Custom Instruction:
-            <textarea
-              placeholder="Custom Instruction"
-              value={customInstruction}
-              onChange={handleChangeCustomInstruction}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline h-24"
-            />
-          </div>
-        )}
+        ) : null}
       </div>
     </div>
   );
