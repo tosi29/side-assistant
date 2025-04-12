@@ -29,6 +29,12 @@ chrome.runtime.onInstalled.addListener(() => {
       contexts: ['selection'],
     });
   });
+  // 新しいコンテキストメニュー項目を追加
+  chrome.contextMenus.create({
+    id: 'abstract_compare',
+    title: '抽象度を変えて読む',
+    contexts: ['selection'],
+  });
 });
 
 const handleData = (data: string) => {
@@ -48,22 +54,30 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     return;
   }
 
-  const usecase = usecases[info.menuItemId as string];
-  if (!usecase) {
-    return;
-  }
-
   chrome.sidePanel.open({ windowId: tab.windowId });
   clearContext();
 
-  if (usecase.id === 'custom') {
-    usecase.systemPrompt = (await getCustomInstructionConfiguration()) ?? '';
-  }
-
-  if (usecase.id === 'forward') {
-    chrome.runtime.sendMessage({ type: 'forward', text: info.selectionText });
+  if (info.menuItemId === 'abstract_compare') {
+    // 新しい抽象度比較リクエストをサイドパネルに送信
+    chrome.runtime.sendMessage({ type: 'abstract_compare_request', text: info.selectionText });
   } else {
-    await callGeminiApi(usecase.systemPrompt, [info.selectionText], handleData, handleCompleted);
+    // 既存のユースケース処理
+    const usecase = usecases[info.menuItemId as string];
+    if (!usecase) {
+      console.error('Unknown context menu item ID:', info.menuItemId);
+      return; // 不明なIDの場合は何もしない
+    }
+
+    if (usecase.id === 'custom') {
+      usecase.systemPrompt = (await getCustomInstructionConfiguration()) ?? '';
+    }
+
+    if (usecase.id === 'forward') {
+      chrome.runtime.sendMessage({ type: 'forward', text: info.selectionText });
+    } else {
+      // 通常のAPI呼び出し
+      await callGeminiApi(usecase.systemPrompt, [info.selectionText], handleData, handleCompleted);
+    }
   }
 });
 
