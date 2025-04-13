@@ -1,147 +1,95 @@
-<div align="center">
-  <br>
- <img src="https://raw.githubusercontent.com/sinanbekar/browser-extension-react-typescript-starter/main/public/images/extension_128.png" alt="Browser Extension React & TypeScript Starter" width="128">
-  <br>
-  <h2>
-    Browser Extension <br>
-    React & TypeScript Starter
-    <br>
-  </h2>
-</div>
+# Side Assistant
 
-<p align="center">A cross-platform (Chrome, Firefox, Edge, Opera, Brave) web browser extension (Manifest V3 and Manifest V2) starter kit with hot reload support, built with React, Typescript, Redux, Vite, ESLint, Prettier, TailwindCSS, Jest and more! </p>
-<hr />
+[![version](https://img.shields.io/badge/version-0.5.0-blue.svg)](package.json) [![license](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-<div align="center" >
-  <a href="https://github.com/sinanbekar/browser-extension-react-typescript-starter/actions">
-    <img src="https://github.com/sinanbekar/browser-extension-react-typescript-starter/actions/workflows/ci.yml/badge.svg" alt="CI">
-  </a>
-    &nbsp;
-  <a>
-    <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs welcome">
-  </a>
-    &nbsp;
-  <a href="https://github.com/sinanbekar/browser-extension-react-typescript-starter/blob/main/LICENSE">
-    <img src="https://img.shields.io/apm/l/atomic-design-ui.svg" alt="MIT License">
-  </a>
+Side Assistant は、生成 AI (Gemini) を活用してブラウジング体験を向上させる Chrome 拡張機能です。Web ページ上のテキストや PDF ドキュメントの内容を元に、要約、推敲、解説などを簡単に行うことができます。
 
-</div>
+## 主な機能
 
-<p align="center">
-  <a href="#features">Features</a> ·
-  <a href="#quick-start">Quick Start</a> ·
-  <a href="#important-notes">Important Notes</a> ·
-  <a href="#license">License</a>
-</p>
+- **Web ページでの利用**:
+  - テキストを選択し、右クリックメニューから「要約」「推敲」「解説」などのプロンプトを素早く実行できます。
+  - 実行結果はサイドパネルに表示されます。
+- **PDF での利用**:
+  - Chrome で PDF を開くと、専用のポップアップメニューが表示されます。
+  - 「要約」「目次生成」「Markdown 形式に変換」などの機能を利用できます。
+  - 実行結果はサイドパネルに表示されます。
+- **サイドパネル**:
+  - 生成 AI との対話履歴や、実行したタスクの結果を確認できます。
+- **カスタマイズ**:
+  - ご自身の Google AI Studio (Gemini) API キーを設定して利用できます。
+  - 利用する Gemini モデルを選択できます。
 
-> 🚀 **NEW** (experimental) Zustand for state management instead Redux, with [`webext-zustand`](https://github.com/sinanbekar/webext-zustand) package. You can try it now on the branch [`experimental-zustand`](https://github.com/sinanbekar/browser-extension-react-typescript-starter/tree/experimental-zustand)
+## インストール
 
-## Features
+Chrome ウェブストアについては、現在公開準備中です。
 
-- **Instant HMR** (hot reload)[^1]
-- Write once run on any browser
-- Global Redux support with persist option. Effortless communication between content, background, popup, options, and more pages.
-- Provides a basic content example and popup, options, and welcome pages with all React
-- Latest Manifest V3 support
-- Manifest V2 support (beta)
-- Dynamic manifest.json
-- Includes ESLint configured to work with TypeScript and Prettier
-- Includes tests with Jest
+**開発者モードでの手動インストール:**
 
-#### Built with
+1.  このリポジトリをクローンまたはダウンロードします。
+2.  ターミナルでリポジトリのディレクトリに移動し、依存関係をインストールします:
+    ```bash
+    yarn install
+    ```
+3.  プロジェクトをビルドします:
+    ```bash
+    yarn build
+    ```
+    これにより `dist` ディレクトリが生成されます。
+4.  Chrome ブラウザで `chrome://extensions` を開きます。
+5.  右上の「デベロッパーモード」を有効にします。
+6.  「パッケージ化されていない拡張機能を読み込む」ボタンをクリックします。
+7.  ステップ 3 で生成された `dist` ディレクトリを選択します。
 
-- React
-- TypeScript
-- Redux (toolkit and redux-persist)
-- TailwindCSS
-- Vite
-- Jest
-- ESLint
-- Prettier
-- simple-git-hooks (lightweight husky alternative)
-- nano-staged
+## 使い方
 
-[^1]: While it is fully supported and stable in most cases, hard reloading is rarely recommended.
+1.  拡張機能アイコンをクリックして、オプションページを開きます。
+2.  Google AI Studio で取得したご自身の API キーを入力し、保存します。
+3.  利用したい Gemini モデルを選択します。
+4.  Web ページ上でテキストを選択し、右クリックメニューから実行したいタスクを選択します。
+5.  PDF を開いている場合は、画面右下に表示されるポップアップメニューからタスクを選択します。
+6.  サイドパネルで結果を確認します。
 
-## Browser Support
+## 開発者向け情報
 
-| [![Chrome](https://raw.github.com/alrra/browser-logos/master/src/chrome/chrome_48x48.png)](/) | [![Firefox](https://raw.github.com/alrra/browser-logos/master/src/firefox/firefox_48x48.png)](/) | [![Edge](https://raw.github.com/alrra/browser-logos/master/src/edge/edge_48x48.png)](/) | [![Opera](https://raw.github.com/alrra/browser-logos/master/src/opera/opera_48x48.png)](/) | [![Brave](https://raw.github.com/alrra/browser-logos/master/src/brave/brave_48x48.png)](/) |
-| --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ |
-| ✔                                                                                             | ✔ (Beta)                                                                                         | ✔                                                                                       | ✔                                                                                          | ✔                                                                                          |
-
-## Quick Start
-
-Ensure you have
-
-- [Node.js](https://nodejs.org) 16 or later installed
-- [Yarn](https://yarnpkg.com) installed
-
-### Use the Template
-
-#### GitHub Template
-
-[Create a repo from this template on GitHub](https://github.com/sinanbekar/browser-extension-react-typescript-starter/generate).
-
-**_or_**
-
-#### Clone to local
-
-If you prefer to do it manually with the cleaner git history
-
-> **Note** If you don't have yarn installed, run: npm install -g yarn
+### セットアップ
 
 ```bash
-npx degit sinanbekar/browser-extension-react-typescript-starter my-web-extension
-cd my-web-extension
-git init
+# リポジトリをクローン (リポジトリのURLを適切に設定してください)
+# git clone https://github.com/(ユーザー名)/(リポジトリ名).git
+# cd side-assistant
+
+# 依存関係をインストール
+yarn install
 ```
 
-Then run the following:
+### 開発サーバーの起動
 
-- `yarn install` to install dependencies.
-- `yarn dev` to start the development server.
-- `yarn build` to build an unpacked extension.
+```bash
+yarn dev
+```
 
-- **Load extension in Chrome (Chromium, Manifest V3)**
+これにより、ファイルの変更を監視し、自動的に再ビルドが行われます (`dist` ディレクトリが更新されます)。Chrome 拡張機能として読み込み直すことで、変更が反映されます。
 
-  - Go to the browser address bar and type `chrome://extensions`
-  - Check the `Developer Mode` button to enable it.
-  - Click on the `Load Unpacked Extension` button.
-  - Select your `dist` folder in the project root.
+### ビルド
 
-- **Load extension in Firefox (Manifest V2)**
+```bash
+yarn build
+```
 
-  - Go to the browser address bar and type `about://debugger`
-  - Click on the `Load Temporary Add-on` button.
-  - Select your `dist-firefox-v2` folder in the project root.
+`dist` ディレクトリに本番用のファイルが生成されます。
 
-### Available Commands
+### テスト
 
-- `yarn clean` to remove dist folder. `dev` and `build` commands call this command.
-- `yarn format` to fix code with eslint and prettier.
-- `yarn lint` to call ESLint and Prettier.
-- `yarn test` for testing.
+```bash
+yarn test
+```
 
-### Redux
+### Lint & Format
 
-You can use redux (redux-toolkit) as state manager between popup, background, content and custom pages. Read the documentation for more.
+```bash
+# Lintチェック
+yarn lint
 
-#### [@eduardoac-skimlinks/webext-redux](https://github.com/eduardoacskimlinks/webext-redux)
-
-### Bundling
-
-#### [@crxjs/vite-plugin](https://github.com/crxjs/chrome-extension-tools)
-
-> **Note** This plugin powers the development side of this starter.
->
-> docs: https://crxjs.dev/vite-plugin
->
-> Special thanks to [@jacksteamdev](https://github.com/jacksteamdev) and contributors for this amazing plugin.
-
-## Contributing
-
-This repository is following the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) standard.
-
-## License
-
-MIT © [Sinan Bekar](https://sinan.engineer)
+# フォーマット (Prettier & ESLint --fix)
+yarn format
+```
