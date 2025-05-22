@@ -1,0 +1,37 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build
+        run: yarn build
+
+      - name: Create zip file
+        run: |
+          cd dist
+          zip -r ../side-assistant.zip *
+          cd ..
+
+      - name: Upload Chrome Extension Zip
+        uses: actions/upload-artifact@v3
+        with:
+          name: side-assistant-chrome-extension
+          path: side-assistant.zip
