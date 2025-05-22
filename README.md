@@ -93,3 +93,16 @@ yarn lint
 # フォーマット (Prettier & ESLint --fix)
 yarn format
 ```
+
+### リリース
+
+リリースを作成するには、以下の手順に従ってください：
+
+1. `package.json` の `version` を更新します。
+2. リポジトリにタグを付けます（例: `v0.5.1`）:
+   ```bash
+   git tag v0.5.1
+   git push origin v0.5.1
+   ```
+
+タグをプッシュすると、GitHub Actions が自動的に拡張機能をビルドし、Chrome Web Store へのアップロード用の zip ファイルを作成します。作成された zip ファイルは GitHub Actions の実行結果からダウンロードできます。
