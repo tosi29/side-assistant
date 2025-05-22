@@ -8,7 +8,7 @@ import store, { setCurrentTabId } from '../app/store';
 import { usecasesForPdf } from '../app/usecases';
 
 const Popup = () => {
-  const [selectedModel, setSelectedModel] = useState<string>('gemini-2.0-flash-thinking-exp-01-21');
+  const [selectedModel, setSelectedModel] = useState<string>('gemini-2.5-flash-preview-05-20');
   const [isPdfTab, setIsPdfTab] = useState<boolean>(false);
 
   useEffect(() => {
@@ -118,12 +118,8 @@ const Popup = () => {
             onChange={handleChange}
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           >
-            <option value="gemini-2.0-flash-thinking-exp-01-21">
-              Gemini 2.0 Flash Thinking Experimental 01-21
-            </option>
-            <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
-            <option value="gemini-2.0-pro-exp-02-05">Gemini 2.0 Pro Experimental 02-05</option>
-            <option value="gemini-2.5-pro-exp-03-25">Gemini 2.5 Pro Experimental 03-25</option>
+            <option value="gemini-2.5-flash-preview-05-20">Gemini 2.5 Flash Preview 05-20</option>
+            <option value="gemini-2.5-pro-preview-05-06">Gemini 2.5 Pro Preview 05-06</option>
           </select>
         </div>
         {isPdfTab ? (
