@@ -20,7 +20,8 @@
   "plugins": ["@typescript-eslint", "prettier", "react", "react-hooks"],
   "rules": {
     "react/react-in-jsx-scope": "off",
-    "prettier/prettier": 0
+    "prettier/prettier": 0,
+    "complexity": ["warn", 10]
   },
   "overrides": [
     {

@@ -94,6 +94,17 @@ yarn lint
 yarn format
 ```
 
+### コード複雑度メトリクス
+
+循環的複雑度（Cyclomatic Complexity）のレポートを生成するには:
+
+```bash
+yarn complexity-report
+```
+
+このコマンドは `complexity-report.html` を生成します。また、GitHub Pages でも最新の複雑度メトリクスを確認できます：
+[Side Assistant Complexity Report](https://tosi29.github.io/side-assistant/)
+
 ## リリース
 
 リリースを作成するには、以下の手順に従ってください：
