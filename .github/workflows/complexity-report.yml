@@ -1,0 +1,69 @@
+name: Generate Complexity Report
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+# Sets permissions of the GITHUB_TOKEN
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  generate-complexity-report:
+    runs-on: ubuntu-latest
+    # Build job
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Generate complexity report
+        run: yarn complexity-report
+
+      - name: Debug report file
+        run: |
+          ls -la
+          test -f complexity-report.html && echo "Report file exists" || echo "Report file does not exist"
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Create report directory
+        run: |
+          mkdir -p ./complexity-report
+          mv complexity-report.html ./complexity-report/index.html
+          ls -la ./complexity-report
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './complexity-report'
+
+      # Deploy only on push to main, not on PR
+      - name: Deploy to GitHub Pages
+        id: deployment
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        uses: actions/deploy-pages@v4
