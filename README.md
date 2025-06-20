@@ -106,3 +106,9 @@ yarn format
    ```
 
 タグをプッシュすると、GitHub Actions が自動的に拡張機能をビルドし、Chrome Web Store へのアップロード用の zip ファイルを作成します。作成された zip ファイルは GitHub Actions の実行結果からダウンロードできます。
+
+## LICENSE
+MIT
+
+This extension contains MIT license software as follows:
+- https://github.com/sinanbekar/browser-extension-react-typescript-starter
